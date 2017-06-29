@@ -17,7 +17,8 @@ namespace scott {
         public:
             /*------handlers that may involved client::Delegate class------*/
             void new_file(); // sends request to the server, expects directory filepath as resposne
-            void save_file(std::string const filename, std::string const code); // sends code to the server to receive directory path
+            void save_new_file(std::string const filename, std::string const code); // sends code to the server to receive directory path
+            void save_file(std::string const code);
             void choose_file(std::string const filepath); // send to server the final path of the file, expects code content as response
             void open_file(); // sends open file request, expects a directory path as response
             void get_version(); // sends see versions request, expects history versions as response

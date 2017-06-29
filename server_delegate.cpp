@@ -59,6 +59,7 @@ namespace scott {
             if (header == requests.save_new_file) {
                 std::string filename, code;
                 iss >> filename >> code;
+                std::cout << "hello";
                 save(filename, code);
             }
             else if (header == requests.save_file) {
@@ -134,6 +135,13 @@ namespace scott {
         if (!current_user.empty()) {
             std::lock_guard<std::mutex> guard(mutex);
             save(code);
+            std::ofstream file(filename);
+            std::istringstream iss(code);
+            std::string line;
+            while (std::getline(iss, line)) {
+                std::cout << line << std::endl;
+                file << line << '\n';
+            }
             // save and write file with Qt Library
         }
         else { throw std::logic_error("Error: you're not logged in.\n"); }

@@ -4,13 +4,14 @@
 BrainfuckIDE::BrainfuckIDE(QWidget *parent) :
     QMainWindow(parent),
     server(3333),
+    save_file_dialog(new SaveFileDialog),
     ui(new Ui::BrainfuckIDE)
 {
     server.start();
     ui->setupUi(this);
 
     /* initializing members*/
-    is_saved = std::make_pair<QString, bool>(filename, false);
+    is_saved = std::make_pair(filename, false);
 
     // setting up all the connections between the client_delegate and the ui class
     QObject::connect(&intermediary.delegate, SIGNAL(signal_load_result(QString)), this, SLOT(slot_load_result(QString)));
@@ -90,9 +91,6 @@ void BrainfuckIDE::on_actionCreate_new_account_triggered()
 
 void BrainfuckIDE::on_actionOpen_triggered()
 {
-    /* save file
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "untitled.bf", tr("Images (*.bf *.ook)"));
-    */
     intermediary.open_file();
 }
 
@@ -104,5 +102,22 @@ void BrainfuckIDE::on_actionLogout_triggered()
 
 void BrainfuckIDE::on_actionSave_triggered()
 {
+    code = ui->CodeEditor->toPlainText();
+    auto flag = is_saved.second;
+    if (flag) {
+        intermediary.save_file(code.toStdString());
+    }
+    else {
+        filename = save_file_dialog->getSaveFileName(this, tr("Save File"),
+                                   "./untitled.bf",
+                                   tr("Source files (*.bf *.ook)"));
 
+    }
+}
+
+void BrainfuckIDE::on_actionSave_as_triggered()
+{
+    filename = save_file_dialog->getSaveFileName(this, tr("Save File"),
+                               "./untitled.bf",
+                               tr("Source files (*.bf *.ook)"));
 }

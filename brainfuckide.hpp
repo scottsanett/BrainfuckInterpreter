@@ -11,6 +11,7 @@
 
 #include "loginwindow.hpp"
 #include "createaccount.hpp"
+#include "savefiledialog.hpp"
 
 namespace Ui {
 class BrainfuckIDE;
@@ -51,6 +52,8 @@ private slots:
 
     void on_actionSave_triggered();
 
+    void on_actionSave_as_triggered();
+
 private:
     scott::Server server;
     scott::client::Intermediary intermediary;
@@ -60,6 +63,9 @@ private:
     QString result;
     QString filename = "untitled.bf";
     std::pair<QString, bool> is_saved;
+
+    /* UI elements */
+    SaveFileDialog *save_file_dialog;
     Ui::BrainfuckIDE *ui;
 
 };
