@@ -125,6 +125,9 @@
           <height>0</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">font: 13pt &quot;Monaco&quot;;</string>
+        </property>
        </widget>
       </widget>
      </widget>
@@ -147,6 +150,7 @@
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
+    <addaction name="actionSave_as"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuRun">
@@ -164,6 +168,7 @@
     <property name="title">
      <string>Account</string>
     </property>
+    <addaction name="actionCreate_new_account"/>
     <addaction name="actionLogin"/>
     <addaction name="actionLogout"/>
    </widget>
@@ -172,6 +177,7 @@
    <addaction name="menuVersion"/>
    <addaction name="menuAccount"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNew">
    <property name="text">
     <string>New</string>
@@ -220,6 +226,16 @@
   <action name="actionLogout">
    <property name="text">
     <string>Logout</string>
+   </property>
+  </action>
+  <action name="actionCreate_new_account">
+   <property name="text">
+    <string>Create account</string>
+   </property>
+  </action>
+  <action name="actionSave_as">
+   <property name="text">
+    <string>Save as</string>
    </property>
   </action>
  </widget>

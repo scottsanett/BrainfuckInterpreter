@@ -1,6 +1,6 @@
 #include "client.hpp"
 
-scott::client::Delegate scott::client::Session::delegate;
+//scott::client::Delegate scott::client::Session::delegate(0);
 
 namespace scott {
     namespace client {
@@ -21,39 +21,39 @@ namespace scott {
         m_thread.reset(new std::thread([this](){ m_ios.run(); }));
     }
 
-    void Client::on_connection(const boost::system::error_code &ec, session_ptr this_session) {
+    void Client::on_connection(const boost::system::error_code &ec, session_ptr this_session, client::Delegate & delegate) {
         if (ec != 0) {
             std::cout << "Client connection error occurred! Error code = " << ec.value() << ". Message: " << ec.message()
             << std::endl;
             return;
         }
-        boost::asio::async_write(this_session->m_socket, boost::asio::buffer(this_session->m_request), [this, this_session](const boost::system::error_code& ec, std::size_t bytes_transferred){
-            this->on_write_complete(ec, bytes_transferred, this_session);
+        boost::asio::async_write(this_session->m_socket, boost::asio::buffer(this_session->m_request), [this, this_session, &delegate](const boost::system::error_code& ec, std::size_t bytes_transferred){
+            this->on_write_complete(ec, bytes_transferred, this_session, delegate);
         });
     }
 
-    void Client::on_write_complete(const boost::system::error_code &ec, std::size_t bytes_transferred, session_ptr this_session) {
+    void Client::on_write_complete(const boost::system::error_code &ec, std::size_t bytes_transferred, session_ptr this_session, client::Delegate & delegate) {
         if (ec != 0) {
             std::cout << "Client write error occurred! Error code = " << ec.value() << ". Message: " << ec.message()
             << std::endl;
             return;
         }
-        boost::asio::async_read_until(this_session->m_socket, this_session->m_buffer, scott::requests.delim, [this, this_session](const boost::system::error_code& ec, std::size_t bytes_transferred){
-            this->on_read_complete(ec, bytes_transferred, this_session);
+        boost::asio::async_read_until(this_session->m_socket, this_session->m_buffer, scott::requests.delim, [this, this_session, &delegate](const boost::system::error_code& ec, std::size_t bytes_transferred){
+            this->on_read_complete(ec, bytes_transferred, this_session, delegate);
         });
     }
 
-    void Client::on_read_complete(const boost::system::error_code &ec, std::size_t bytes_transferred, session_ptr this_session) {
+    void Client::on_read_complete(const boost::system::error_code &ec, std::size_t bytes_transferred, session_ptr this_session, client::Delegate & delegate) {
         if (ec != 0) {
             this_session->m_ec = ec; }
         else {
             std::istream is(&this_session->m_buffer);
             std::getline(is, this_session->m_response);
         }
-        this->on_request_complete(this_session);
+        this->on_request_complete(this_session, delegate);
     }
 
-    void Client::send_request(std::string const raw_ip_address, unsigned short port_num, std::string const request, unsigned int id) {
+    void Client::send_request(std::string const raw_ip_address, unsigned short port_num, std::string const request, unsigned int id, client::Delegate & delegate) {
         auto request_id = id;
 
         auto this_session = std::make_shared<client::Session>(m_ios, raw_ip_address, port_num, request, request_id, client::handler);
@@ -63,12 +63,12 @@ namespace scott {
         m_sessions[request_id] = this_session;
         lock.unlock();
 
-        this_session->m_socket.async_connect(this_session->m_endpoint, [this, this_session](const boost::system::error_code& ec){
-            this->on_connection(ec, this_session);
+        this_session->m_socket.async_connect(this_session->m_endpoint, [this, this_session, &delegate](const boost::system::error_code& ec){
+            this->on_connection(ec, this_session, delegate);
         });
     }
 
-    void Client::on_request_complete(session_ptr session) {
+    void Client::on_request_complete(session_ptr session, client::Delegate & delegate) {
 
         boost::system::error_code ignored;
         session->m_socket.shutdown(boost::asio::socket_base::shutdown_both, ignored);
@@ -78,7 +78,7 @@ namespace scott {
         if (it != m_sessions.end()) { m_sessions.erase(it); }
         lock.unlock();
 
-        session->callback(session->delegate, session->m_response, session->m_ec);
+        session->callback(delegate, session->m_response, session->m_ec);
     }
 
     void Client::m_callback(const boost::system::error_code &ec) {

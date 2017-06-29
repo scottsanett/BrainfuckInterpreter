@@ -85,7 +85,7 @@ namespace scott {
                 result = return_file_content(filepath);
             }
             // return filepath
-            // send open directory resposne
+            // send open directory response
             else if (header == requests.open_file) {
                 result = std::string(responses.file_path) + " " + return_file_path() + std::string(responses.delim);
             }

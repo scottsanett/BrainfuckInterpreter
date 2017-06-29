@@ -35,7 +35,9 @@ SOURCES += \
     client_delegate.cpp \
     interpreter.cpp \
     client.cpp \
-    server.cpp
+    server.cpp \
+    loginwindow.cpp \
+    createaccount.cpp
 
 HEADERS += \
     server_delegate.hpp \
@@ -45,7 +47,11 @@ HEADERS += \
     intermediary.hpp \
     client_delegate.hpp \
     client.hpp \
-    brainfuckide.hpp
+    brainfuckide.hpp \
+    loginwindow.hpp \
+    createaccount.hpp
 
 FORMS += \
-        brainfuckide.ui
+        brainfuckide.ui \
+    loginwindow.ui \
+    createaccount.ui

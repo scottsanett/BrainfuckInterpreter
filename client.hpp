@@ -11,8 +11,7 @@ namespace scott {
         class Session {
             using Callback = void(*)(client::Delegate& delegate, const std::string& response, const boost::system::error_code& ec);
         public:
-
-            static client::Delegate delegate;
+//            static client::Delegate delegate;
             
             boost::asio::io_service& m_ios;
             boost::asio::streambuf m_buffer;
@@ -47,17 +46,17 @@ namespace scott {
         std::unique_ptr<boost::asio::io_service::work> m_work;
         std::unique_ptr<std::thread> m_thread;
         
-        void on_connection(const boost::system::error_code& ec, session_ptr this_session);
-        void on_write_complete(const boost::system::error_code& ec, std::size_t bytes_transferred, session_ptr this_session);
-        void on_read_complete(const boost::system::error_code& ec, std::size_t bytes_transferred, session_ptr this_session);
-        void on_request_complete(session_ptr session);
+        void on_connection(const boost::system::error_code& ec, session_ptr this_session, client::Delegate & delegate);
+        void on_write_complete(const boost::system::error_code& ec, std::size_t bytes_transferred, session_ptr this_session, client::Delegate & delegate);
+        void on_read_complete(const boost::system::error_code& ec, std::size_t bytes_transferred, session_ptr this_session, client::Delegate & delegate);
+        void on_request_complete(session_ptr session, client::Delegate & delegate);
         void m_callback(const boost::system::error_code& ec);
         
     public:
         Client();
         ~Client() { if (m_thread->joinable()) m_thread->join(); }
         void close() { m_work.reset(nullptr); }
-        void send_request(std::string const raw_ip_address, unsigned short port_num, std::string const request, unsigned int id);
+        void send_request(std::string const raw_ip_address, unsigned short port_num, std::string const request, unsigned int id, client::Delegate & delegate);
     };
 }
 

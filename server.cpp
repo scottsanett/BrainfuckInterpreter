@@ -16,7 +16,6 @@ namespace scott {
                 std::cout << "Server::Session: Error occurred! Error code = " << ec.value() << ". Message: " << ec.message() << std::endl;
                 return;
             }
-
             m_response = process_request(m_request);
             boost::asio::async_write(*m_socket, boost::asio::buffer(m_response), [this](const boost::system::error_code& ec, std::size_t bytes_transferred){
                 on_response_sent(ec, bytes_transferred);

@@ -7,15 +7,18 @@ namespace scott {
         std::istringstream iss(response);
         iss >> header;
         if (header == responses.file_path) {
-            iss >> body;
-            open_file_path(body);
+            std::string word;
+            while (iss >> word) { body += word + " "; }
+            emit signal_open_file_path(body.c_str());
         }
         else if (header == responses.history_version) {
-            iss >> body;
-            load_history_versions(body);
+            std::string word;
+            while (iss >> word) { body += word + " "; }
+            emit signal_load_history_version(body.c_str());
         }
         else if (header == responses.history_code) {
-            iss >> body;
+            std::string word;
+            while (iss >> word) { body += word + " "; }
             load_history_code(body);
         }
         else if (header == responses.load_file) {
@@ -23,13 +26,17 @@ namespace scott {
             load_file(body);
         }
         else if (header == responses.load_result) {
-            iss >> body;
-            load_result(body);
+            std::string word;
+            while (iss >> word) { body += word + " "; }
+            emit signal_load_result(body.c_str());
         }
         else if (header == responses.op_fail) {
-            iss >> body;
-            load_error_info(body);
+            std::string word;
+            while (iss >> word) { body += word + " "; }
+            emit signal_load_err_info(body.c_str());
         }
     }
+
+
     }
 }

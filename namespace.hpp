@@ -47,7 +47,7 @@ namespace scott {
         const char * op_fail = "R_OPERATION_FAILED";
         const char * delim = "\r\n\r\n";
     } responses;
-    
+
     namespace client {
         class Session;
         class Delegate;
@@ -59,7 +59,7 @@ namespace scott {
         class Acceptor;
         class Delegate;
     }
-    
+
     class Client;
     class Server;
     class Interpreter;
