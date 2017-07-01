@@ -1,7 +1,5 @@
 #include "server.hpp"
 
-scott::server::Delegate scott::server::Session::server_delegate;
-
 namespace scott {
     namespace server {
 
@@ -26,7 +24,7 @@ namespace scott {
             std::istream is(&request);
             std::string line, result;
             std::getline(is, line);
-            server_delegate.parse_request(line, result);
+            BrainfuckIDE::server_delegate.parse_request(line, result);
             result += scott::requests.delim;
             return result;
         }

@@ -13,7 +13,6 @@ namespace scott {
 
     void Intermediary::save_new_file(std::string const filename, std::string const code) {
         std::string request = std::string(scott::requests.save_new_file) + " " + filename + " " + code + std::string(scott::requests.delim);
-        std::cout << "calling save_new_file";
         client.send_request(IP_ADDRESS, port_num, request, ++id, delegate);
     }
 

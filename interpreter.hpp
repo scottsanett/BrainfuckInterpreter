@@ -22,8 +22,11 @@ namespace scott {
         void m_minus() { --(*current_cell); }
         void m_comma() { if (current_input_pos != input.end()) *current_cell = *current_input_pos++;  else { throw std::runtime_error(""); } }
         void m_period() {
+            result += *current_cell;
+            /*
             if (*current_cell < 10) { result += std::to_string((int)*current_cell); }
             else { result += *current_cell; }
+            */
         }
         
         bool check_syntax();

@@ -19,7 +19,7 @@ namespace scott {
         else if (header == responses.history_code) {
             std::string word;
             while (iss >> word) { body += word + " "; }
-            load_history_code(body);
+            emit signal_load_history_code(body.c_str());
         }
         else if (header == responses.load_file) {
             iss >> body;

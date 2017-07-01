@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QString>
 #include <QFileDialog>
+#include <memory>
 
 #include "server.hpp"
 #include "intermediary.hpp"
@@ -11,7 +12,7 @@
 
 #include "loginwindow.hpp"
 #include "createaccount.hpp"
-#include "savefiledialog.hpp"
+#include "menuaction.hpp"
 
 namespace Ui {
 class BrainfuckIDE;
@@ -25,6 +26,9 @@ public:
     explicit BrainfuckIDE(QWidget *parent = 0);
     ~BrainfuckIDE();
 
+signals:
+    void signal_get_history_key(QString);
+
 private slots:
     void slot_login(QString, QString);
 
@@ -37,6 +41,10 @@ private slots:
     void slot_load_file_path(QString);
 
     void slot_load_history_version(QString);
+
+    void slot_load_history_code(QString);
+
+    void slot_get_histoy_key(QString);
 
     void on_actionExit_triggered();
 
@@ -55,8 +63,7 @@ private slots:
     void on_actionSave_as_triggered();
 
 private:
-    scott::Server server;
-    scott::client::Intermediary intermediary;
+    static scott::Server server;
 
     QString code;
     QString input;
@@ -65,8 +72,11 @@ private:
     std::pair<QString, bool> is_saved;
 
     /* UI elements */
-    SaveFileDialog *save_file_dialog;
     Ui::BrainfuckIDE *ui;
+
+public:
+    static scott::client::Intermediary intermediary;
+    static scott::server::Delegate server_delegate;
 
 };
 

@@ -38,7 +38,7 @@ SOURCES += \
     server.cpp \
     loginwindow.cpp \
     createaccount.cpp \
-    savefiledialog.cpp
+    menuaction.cpp
 
 HEADERS += \
     server_delegate.hpp \
@@ -51,7 +51,7 @@ HEADERS += \
     brainfuckide.hpp \
     loginwindow.hpp \
     createaccount.hpp \
-    savefiledialog.hpp
+    menuaction.hpp
 
 FORMS += \
         brainfuckide.ui \

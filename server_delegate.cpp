@@ -5,6 +5,7 @@ namespace scott {
 
         // filling all the information from the cache
         Delegate::Delegate() {
+            logged_in = false;
             std::lock_guard<std::mutex> guard(mutex);
             std::ifstream users("./.userinfo");
             for(std::string line; std::getline(users, line); ) {
@@ -16,11 +17,12 @@ namespace scott {
                 code_history.insert(std::make_pair(username, str_map()));
                 auto this_user = code_history.find(username);
                 for (std::string code; std::getline(history, code); ) {
-                    std::istringstream iss_code(line);
+                    std::istringstream iss_code(code);
                     std::string key, value, temp;
                     iss_code >> key;
                     while (iss_code >> temp) { value += temp + " "; }
                     this_user->second.insert(std::make_pair(key, value));
+                    std::cout << key << " " << value << std::endl;
                 }
                 history.close();
             }
@@ -29,7 +31,10 @@ namespace scott {
 
 
     Delegate::~Delegate() {
-        std::lock_guard<std::mutex> guard(mutex);
+        save_user_history();
+    }
+
+    void Delegate::save_user_history() {
         if (user_info.size() != 0) {
             std::ofstream users("./.userinfo");
             for (auto && user : user_info) {
@@ -41,8 +46,8 @@ namespace scott {
                 else if (this_history->second.empty()) { continue; } // the user has no history entry
                 std::ofstream history("./.history_" + username);
                 for (auto && entry : this_history->second) {
-                    std::string line = entry.first + " " + entry.second;
-                    history << line << std::endl;
+                    std::string entry_line = entry.first + " " + entry.second;
+                    history << entry_line << std::endl;
                 }
                 history.close();
             }
@@ -59,7 +64,6 @@ namespace scott {
             if (header == requests.save_new_file) {
                 std::string filename, code;
                 iss >> filename >> code;
-                std::cout << "hello";
                 save(filename, code);
             }
             else if (header == requests.save_file) {
@@ -94,6 +98,11 @@ namespace scott {
             else if (header == requests.get_version) {
                 result = std::string(responses.history_version) + " " + return_history_versions(current_user) + std::string(responses.delim);
             }
+            else if (header == requests.choose_version) {
+                std::string history_key;
+                iss >> history_key;
+                result = std::string(responses.history_code) + " " + return_history_code(current_user, history_key) + std::string(responses.delim);
+            }
             else if (header == requests.create_account) {
                 std::string user, pwd;
                 iss >> user >> pwd;
@@ -117,32 +126,34 @@ namespace scott {
     void Delegate::save(std::string const & code) {
         if (!current_user.empty()) {
             std::lock_guard<std::mutex> guard(mutex);
+            if (code_history.find(current_user) == code_history.end()) {
+                code_history.insert(std::make_pair(current_user, scott::str_map()));
+            }
             auto && user_repo = code_history.find(current_user)->second;
             // if identical code isn't found, save it with a time stamp
             if (user_repo.find(code) == user_repo.end()) {
                 std::ostringstream oss;
                 std::time_t t = std::time(nullptr);
                 std::tm now_time = *std::localtime(&t);
-                oss << std::put_time(&now_time, "%Y%m%e%H%M%S");
+                oss << std::put_time(&now_time, "%Y%m%d%H%M%S");
                 std::string time_string = oss.str();
                 user_repo.insert(std::make_pair(time_string, code));
             }
+            save_user_history();
         }
         else { throw std::logic_error("Error: you're not logged in.\n"); }
     }
 
     void Delegate::save(std::string const & filename, std::string const & code) {
         if (!current_user.empty()) {
-            std::lock_guard<std::mutex> guard(mutex);
             save(code);
+            std::lock_guard<std::mutex> guard(mutex);
             std::ofstream file(filename);
             std::istringstream iss(code);
             std::string line;
             while (std::getline(iss, line)) {
-                std::cout << line << std::endl;
                 file << line << '\n';
             }
-            // save and write file with Qt Library
         }
         else { throw std::logic_error("Error: you're not logged in.\n"); }
     }
@@ -158,6 +169,11 @@ namespace scott {
         else { throw std::logic_error("Error: you're not logged in.\n"); }
     }
 
+    void Delegate::log_out() {
+        current_user.clear();
+        logged_in = false;
+    }
+
     void Delegate::create_account(const std::string & name, const std::string & password) {
         std::lock_guard<std::mutex> guard(mutex);
         auto itr = user_info.find(name);
@@ -167,9 +183,13 @@ namespace scott {
 
     void Delegate::authenticate(const std::string & name, const std::string & password) {
         std::lock_guard<std::mutex> guard(mutex);
+        if (logged_in == true) throw std::logic_error("Error: You are already logged in.");
         auto itr = user_info.find(name);
         if (itr == user_info.end()) { throw std::logic_error("Error: user not found.\n"); } // user not found
-        else if (itr->second == password) { current_user = name; } // authentication successful
+        else if (itr->second == password) {
+            current_user = name;
+            logged_in = true;
+        } // authentication successful
         else { throw std::logic_error("Error: wrong password.\n");  } // wrong password
     }
 
@@ -187,6 +207,7 @@ namespace scott {
         std::string result;
         auto itr = code_history.find(username);
         auto pair = itr->second.find(history_key);
+        std::cout << pair->second;
         return pair->second;
     }
 

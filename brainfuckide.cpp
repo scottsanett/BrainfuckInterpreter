@@ -1,10 +1,12 @@
 #include "brainfuckide.hpp"
 #include "ui_brainfuckide.h"
 
+scott::Server BrainfuckIDE::server(3333);
+scott::client::Intermediary BrainfuckIDE::intermediary;
+scott::server::Delegate BrainfuckIDE::server_delegate;
+
 BrainfuckIDE::BrainfuckIDE(QWidget *parent) :
     QMainWindow(parent),
-    server(3333),
-    save_file_dialog(new SaveFileDialog),
     ui(new Ui::BrainfuckIDE)
 {
     server.start();
@@ -18,6 +20,7 @@ BrainfuckIDE::BrainfuckIDE(QWidget *parent) :
     QObject::connect(&intermediary.delegate, SIGNAL(signal_load_err_info(QString)), this, SLOT(slot_load_err_info(QString)));
     QObject::connect(&intermediary.delegate, SIGNAL(signal_open_file_path(QString)), this, SLOT(slot_load_file_path(QString)));
     QObject::connect(&intermediary.delegate, SIGNAL(signal_load_history_version(QString)), this, SLOT(slot_load_history_version(QString)));
+    QObject::connect(&intermediary.delegate, SIGNAL(signal_load_history_code(QString)), this, SLOT(slot_load_history_code(QString)));
 }
 
 BrainfuckIDE::~BrainfuckIDE()
@@ -29,6 +32,9 @@ BrainfuckIDE::~BrainfuckIDE()
 
 void BrainfuckIDE::slot_login(QString usr, QString pwd) {
     intermediary.on_login_clicked(usr.toStdString(), pwd.toStdString());
+    ui->menuVersion->clear();
+    ui->menuVersion->addAction("Version control");
+    ui->menuVersion->addSeparator();
     intermediary.get_version();
 }
 
@@ -50,11 +56,22 @@ void BrainfuckIDE::slot_load_file_path(QString filepath) {
 
 void BrainfuckIDE::slot_load_history_version(QString versions) {
     auto versions_str = versions.toStdString();
-    std::string temp;
+    std::string key;
     std::istringstream iss(versions_str);
-    while (iss >> temp) {
-        ui->menuVersion->addAction(temp.c_str());
+    while (iss >> key) {
+        auto current_action = new MenuAction(key.c_str());
+        ui->menuVersion->addAction(current_action);
+        QObject::connect(current_action, SIGNAL(triggered(bool)), current_action, SLOT(slot_trigger(bool)));
+        QObject::connect(current_action, SIGNAL(get_history_key(QString)), this, SLOT(slot_get_histoy_key(QString)));
     }
+}
+
+void BrainfuckIDE::slot_get_histoy_key(QString key) {
+    intermediary.choose_version(key.toStdString());
+}
+
+void BrainfuckIDE::slot_load_history_code(QString content) {
+    ui->CodeEditor->setPlainText(content);
 }
 
 void BrainfuckIDE::on_actionExit_triggered()
@@ -71,12 +88,12 @@ void BrainfuckIDE::on_actionExecute_triggered()
 
 void BrainfuckIDE::on_actionLogin_triggered()
 {
-    QString username, password;
     auto login = new LoginWindow(this);
     login->setModal(true);
     login->setWindowTitle("Login");
     login->show();
     QObject::connect(login, SIGNAL(signal_login_accepted(QString, QString)), this, SLOT(slot_login(QString, QString)));
+    intermediary.get_version();
 }
 
 void BrainfuckIDE::on_actionCreate_new_account_triggered()
@@ -98,6 +115,8 @@ void BrainfuckIDE::on_actionLogout_triggered()
 {
     intermediary.on_logout_clicked();
     ui->menuVersion->clear();
+    ui->menuVersion->addAction("Version control");
+    ui->menuVersion->addSeparator();
 }
 
 void BrainfuckIDE::on_actionSave_triggered()
@@ -108,16 +127,20 @@ void BrainfuckIDE::on_actionSave_triggered()
         intermediary.save_file(code.toStdString());
     }
     else {
-        filename = save_file_dialog->getSaveFileName(this, tr("Save File"),
+        filename = QFileDialog::getSaveFileName(this, tr("Save File"),
                                    "./untitled.bf",
                                    tr("Source files (*.bf *.ook)"));
-
+        intermediary.save_new_file(filename.toStdString(), code.toStdString());
+        flag = true;
     }
+    intermediary.get_version();
 }
 
 void BrainfuckIDE::on_actionSave_as_triggered()
 {
-    filename = save_file_dialog->getSaveFileName(this, tr("Save File"),
+    filename = QFileDialog::getSaveFileName(this, tr("Save File"),
                                "./untitled.bf",
                                tr("Source files (*.bf *.ook)"));
+    intermediary.save_new_file(filename.toStdString(), code.toStdString());
+    intermediary.get_version();
 }

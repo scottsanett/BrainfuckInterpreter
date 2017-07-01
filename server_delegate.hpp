@@ -11,10 +11,13 @@ namespace scott {
             std::map<std::string, str_map> code_history;
             std::string current_user;
             std::mutex mutex;
+            bool logged_in;
             
             void save(std::string const & code);
             void save(std::string const & filename, std::string const & code);
-            void log_out() { current_user.clear(); }
+            void save_user_history();
+
+            void log_out();
             void authenticate(std::string const & name, std::string const & password);
             void create_account(std::string const & name, std::string const & password);
             
