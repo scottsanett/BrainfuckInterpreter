@@ -22,7 +22,6 @@ namespace scott {
                     iss_code >> key;
                     while (iss_code >> temp) { value += temp + " "; }
                     this_user->second.insert(std::make_pair(key, value));
-                    std::cout << key << " " << value << std::endl;
                 }
                 history.close();
             }
@@ -87,7 +86,7 @@ namespace scott {
             else if (header == requests.choose_file) {
                 std::string filepath;
                 iss >> filepath;
-                result = return_file_content(filepath);
+                result = std::string(responses.load_file) + " " + return_file_content(filepath) + std::string(responses.delim);
             }
             // return filepath
             // send open directory response

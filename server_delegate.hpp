@@ -24,7 +24,7 @@ namespace scott {
             std::string run(std::string const & code); // return result
             std::string return_history_versions(std::string const & username); // all history versions
             std::string return_history_code(std::string const & username, std::string const & history_key); // code of a particular history version
-            std::string return_file_path() { return "./"; }; // return file path to the directory where the files are saved
+            std::string return_file_path() { return "~"; } // return file path to the directory where the files are saved
             std::string return_file_content(std::string const & filepath);
             
         public:

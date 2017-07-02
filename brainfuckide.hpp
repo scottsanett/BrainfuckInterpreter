@@ -5,7 +5,9 @@
 #include <QString>
 #include <QFileDialog>
 #include <memory>
+#include <algorithm>
 
+#include "client.hpp"
 #include "server.hpp"
 #include "intermediary.hpp"
 #include "client_delegate.hpp"
@@ -40,6 +42,8 @@ private slots:
 
     void slot_load_file_path(QString);
 
+    void slot_load_file(QString);
+
     void slot_load_history_version(QString);
 
     void slot_load_history_code(QString);
@@ -62,19 +66,24 @@ private slots:
 
     void on_actionSave_as_triggered();
 
-private:
-    static scott::Server server;
+    void on_actionNew_triggered();
 
-    QString code;
+private:
+//    std::string code;
     QString input;
     QString result;
     QString filename = "untitled.bf";
-    std::pair<QString, bool> is_saved;
+    bool is_saved = false;
 
     /* UI elements */
     Ui::BrainfuckIDE *ui;
 
+    std::string format_code();
+    void clear_history_menu();
+
 public:
+    static scott::Server server;
+    static scott::Client client;
     static scott::client::Intermediary intermediary;
     static scott::server::Delegate server_delegate;
 

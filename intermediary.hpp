@@ -2,16 +2,15 @@
 #define intermediary_h
 
 #include "client.hpp"
+#include "brainfuckide.hpp"
 
 namespace scott {
     namespace client {
         class Intermediary {
         private:
-            static scott::Client client;
             const char * IP_ADDRESS = "127.0.0.1";
             const short port_num = 3333;
             std::string file_name;
-//            std::stack<std::string> code; // for undo and redo
             int id;
             
         public:
@@ -40,7 +39,7 @@ namespace scott {
         public:
             Intermediary() = default;
             static scott::client::Delegate delegate;
-            void close() { client.close(); }
+            void close();
         };
         
     }

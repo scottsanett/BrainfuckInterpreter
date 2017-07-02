@@ -8,14 +8,12 @@ namespace scott {
     namespace client {
         class Delegate: public QObject {
             Q_OBJECT
-
-        private:
-            void load_file(std::string const & code) {} // load file when the client requires to open a file
             
         signals:
+            void signal_load_file(QString);
             void signal_load_result(QString);
             void signal_load_err_info(QString);
-            void signal_open_file_path(QString);
+            void signal_load_file_path(QString);
             void signal_load_history_version(QString);
             void signal_load_history_code(QString);
 

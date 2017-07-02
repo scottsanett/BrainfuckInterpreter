@@ -3,40 +3,29 @@
 namespace scott {
     namespace client {
     void Delegate::parse_response(std::string const & response) {
-        std::string header, body;
+        std::string header, body, word;
         std::istringstream iss(response);
         iss >> header;
+        while (iss >> word) { body += word + " "; }
+        body = body.substr(0, body.size() - 1);
         if (header == responses.file_path) {
-            std::string word;
-            while (iss >> word) { body += word + " "; }
-            emit signal_open_file_path(body.c_str());
+            emit signal_load_file_path(body.c_str());
         }
         else if (header == responses.history_version) {
-            std::string word;
-            while (iss >> word) { body += word + " "; }
             emit signal_load_history_version(body.c_str());
         }
         else if (header == responses.history_code) {
-            std::string word;
-            while (iss >> word) { body += word + " "; }
             emit signal_load_history_code(body.c_str());
         }
         else if (header == responses.load_file) {
-            iss >> body;
-            load_file(body);
+            emit signal_load_file(body.c_str());
         }
         else if (header == responses.load_result) {
-            std::string word;
-            while (iss >> word) { body += word + " "; }
             emit signal_load_result(body.c_str());
         }
         else if (header == responses.op_fail) {
-            std::string word;
-            while (iss >> word) { body += word + " "; }
             emit signal_load_err_info(body.c_str());
         }
     }
-
-
     }
 }
