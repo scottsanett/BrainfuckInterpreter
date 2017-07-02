@@ -7,7 +7,7 @@ namespace scott {
     class Interpreter {
     private:
         std::array<char, 8> const symbols = {'+', '-', '>', '<', ',', '.', '[', ']'};
-        char cells[0x10000];
+        char cells[0x100000];
         std::string const request;
         char_pos current_input_pos;
         std::string code;
