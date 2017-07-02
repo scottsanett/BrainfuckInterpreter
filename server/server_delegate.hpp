@@ -2,6 +2,7 @@
 #define server_delegate_h
 
 #include "interpreter/interpreter.hpp"
+#include "gui/brainfuckide.hpp"
 #include <QFileInfo>
 
 namespace scott {

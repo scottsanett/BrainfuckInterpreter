@@ -20,12 +20,6 @@ bool Interpreter::check_syntax() {
     return true;
 }
 
-void Interpreter::parse() {
-    std::istringstream iss(request);
-    iss >> code;
-    iss >> input;
-}
-
 void Interpreter::recursion(char_pos itr) {
     while (itr != code.end() && *itr != ']') {
         if (*itr == symbols[0]) m_plus();
@@ -52,13 +46,22 @@ void Interpreter::recursion(char_pos itr) {
     }
 }
 
+void Interpreter::reset() {
+    for (int i = 0; i < 500; ++i) { cells[i] = 0; }
+    current_cell = &cells[0];
+    current_input_pos = input.begin();
+    result.clear();
+}
 
-std::string Interpreter::start() {
+std::string Interpreter::start(const std::string & str) {
+    std::istringstream iss(str);
+    iss >> code >> input;
     if (!check_syntax()) { return result; }
     try {
+        reset();
         auto itr = code.begin();
         recursion(itr);
-        return "result: " + result + "\n";
+        return result + "\n";
     }
     catch (std::logic_error& e) {
         result = std::string(e.what()) + "\n";

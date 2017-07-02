@@ -93,6 +93,7 @@ public:
     static scott::Client client;
     static scott::client::Intermediary intermediary;
     static scott::server::Delegate server_delegate;
+    static scott::Interpreter interpreter;
 
 };
 

@@ -194,8 +194,7 @@ namespace scott {
         std::unique_lock<std::mutex> guard(mutex);
         if (!current_user.empty()) {
             guard.unlock();
-            auto interpreter = Interpreter(code);
-            auto result = interpreter.start();
+            auto result = BrainfuckIDE::interpreter.start(code);
             return result;
         }
         else { throw std::logic_error("Error: you're not logged in.\n"); }

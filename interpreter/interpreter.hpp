@@ -6,43 +6,33 @@
 namespace scott {
     class Interpreter {
     private:
-        std::vector<char> const symbols = {'+', '-', '>', '<', ',', '.', '[', ']'};
-        std::vector<char> cells;
+        std::array<char, 8> const symbols = {'+', '-', '>', '<', ',', '.', '[', ']'};
+        char cells[0x10000];
         std::string const request;
         char_pos current_input_pos;
         std::string code;
         std::string input;
         std::string result;
-        cell current_cell;
+        char * current_cell;
         int bracket_count;
         
-        void m_more() { if(std::next(current_cell) != cells.end()) current_cell = std::next(current_cell); else cells.resize(cells.size() * 2); }
-        void m_less() { if(current_cell != cells.begin()) current_cell = std::prev(current_cell); else { throw std::logic_error("Error: can't move farther left.\n"); } }
+        void m_more() { ++current_cell; }
+        void m_less() { --current_cell; }
         void m_plus() { ++(*current_cell); }
         void m_minus() { --(*current_cell); }
-        void m_comma() { if (current_input_pos != input.end()) *current_cell = *current_input_pos++;  else { throw std::runtime_error(""); } }
-        void m_period() {
-            result += *current_cell;
-            /*
-            if (*current_cell < 10) { result += std::to_string((int)*current_cell); }
-            else { result += *current_cell; }
-            */
+        void m_comma() {
+            if (current_input_pos != input.end()) { *current_cell = *current_input_pos++; }
+            else { throw std::runtime_error(""); }
         }
+        void m_period() { result.append(1, *current_cell); }
         
         bool check_syntax();
-        void parse();
         void recursion(char_pos);
+        void reset();
          
     public:
-        explicit Interpreter(std::string const & str): request(str), result(std::string{}) {
-            cells.reserve(500);
-            for (auto && c : cells) { c = 0; }
-            parse();
-            current_cell = cells.begin();
-            current_input_pos = input.begin();
-        }
-        
-        std::string start();
+        explicit Interpreter() = default;
+        std::string start(std::string const & str);
     };
 }
 

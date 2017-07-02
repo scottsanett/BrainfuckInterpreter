@@ -11,8 +11,6 @@ namespace scott {
         class Session {
             using Callback = void(*)(client::Delegate& delegate, const std::string& response, const boost::system::error_code& ec);
         public:
-//            static client::Delegate delegate;
-            
             boost::asio::io_service& m_ios;
             boost::asio::streambuf m_buffer;
             boost::asio::ip::tcp::endpoint m_endpoint;

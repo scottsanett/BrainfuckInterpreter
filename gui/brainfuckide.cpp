@@ -5,6 +5,7 @@ scott::Server BrainfuckIDE::server(3333);
 scott::Client BrainfuckIDE::client;
 scott::client::Intermediary BrainfuckIDE::intermediary;
 scott::server::Delegate BrainfuckIDE::server_delegate;
+scott::Interpreter BrainfuckIDE::interpreter;
 
 BrainfuckIDE::BrainfuckIDE(QWidget *parent) :
     QMainWindow(parent),
