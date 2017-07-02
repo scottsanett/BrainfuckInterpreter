@@ -19,3 +19,13 @@ void LoginWindow::on_buttonBox_accepted()
     password = ui->TextPassword->text();
     emit signal_login_accepted(username, password);
 }
+
+void LoginWindow::on_pushButton_clicked()
+{
+    auto create = new CreateAccount(parentWidget());
+    create->setModal(true);
+    create->setWindowTitle("Create new account");
+    create->show();
+    parentWidget()->show();
+    this->close();
+}

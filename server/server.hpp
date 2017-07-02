@@ -1,8 +1,8 @@
 #ifndef server_h
 #define server_h
 
-#include "server_delegate.hpp"
-#include "brainfuckide.hpp"
+#include "server/server_delegate.hpp"
+#include "gui/brainfuckide.hpp"
 
 namespace scott {
     namespace server {

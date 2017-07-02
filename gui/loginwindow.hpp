@@ -2,6 +2,7 @@
 #define LOGINWINDOW_H
 
 #include <QDialog>
+#include "createaccount.hpp"
 
 namespace Ui {
     class LoginWindow;
@@ -24,6 +25,8 @@ signals:
 
 private slots:
     void on_buttonBox_accepted();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::LoginWindow *ui;

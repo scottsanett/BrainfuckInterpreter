@@ -1,4 +1,4 @@
-#include "brainfuckide.hpp"
+#include "gui/brainfuckide.hpp"
 #include "ui_brainfuckide.h"
 
 scott::Server BrainfuckIDE::server(3333);
@@ -12,7 +12,6 @@ BrainfuckIDE::BrainfuckIDE(QWidget *parent) :
 {
     server.start();
     ui->setupUi(this);
-
     // setting up all the connections between the client_delegate and the ui class
     QObject::connect(&intermediary.delegate, SIGNAL(signal_load_result(QString)), this, SLOT(slot_load_result(QString)));
     QObject::connect(&intermediary.delegate, SIGNAL(signal_load_err_info(QString)), this, SLOT(slot_load_err_info(QString)));
@@ -20,6 +19,8 @@ BrainfuckIDE::BrainfuckIDE(QWidget *parent) :
     QObject::connect(&intermediary.delegate, SIGNAL(signal_load_file(QString)), this, SLOT(slot_load_file(QString)));
     QObject::connect(&intermediary.delegate, SIGNAL(signal_load_history_version(QString)), this, SLOT(slot_load_history_version(QString)));
     QObject::connect(&intermediary.delegate, SIGNAL(signal_load_history_code(QString)), this, SLOT(slot_load_history_code(QString)));
+    QObject::connect(&intermediary.delegate, SIGNAL(signal_file_saved()), this, SLOT(slot_file_saved()));
+    on_actionLogin_triggered();
 }
 
 BrainfuckIDE::~BrainfuckIDE()
@@ -32,7 +33,7 @@ BrainfuckIDE::~BrainfuckIDE()
 void BrainfuckIDE::slot_login(QString usr, QString pwd) {
     intermediary.on_login_clicked(usr.toStdString(), pwd.toStdString());
     clear_history_menu();
-    intermediary.get_version();
+    this->show();
 }
 
 void BrainfuckIDE::slot_create_account(QString usr, QString pwd) {
@@ -54,6 +55,8 @@ void BrainfuckIDE::slot_load_file_path(QString filepath) {
 
 void BrainfuckIDE::slot_load_file(QString content) {
     ui->CodeEditor->setPlainText(content);
+    intermediary.get_version();
+    is_saved = true;
 }
 
 void BrainfuckIDE::slot_load_history_version(QString versions) {
@@ -77,6 +80,10 @@ void BrainfuckIDE::slot_load_history_code(QString content) {
     ui->CodeEditor->setPlainText(content);
 }
 
+void BrainfuckIDE::slot_file_saved() {
+    ui->statusBar->showMessage("The file has been saved.", 5000);
+}
+
 void BrainfuckIDE::on_actionExit_triggered()
 {
     this->close();
@@ -92,11 +99,12 @@ void BrainfuckIDE::on_actionExecute_triggered()
 void BrainfuckIDE::on_actionLogin_triggered()
 {
     auto login = new LoginWindow(this);
+    QDesktopWidget *desktop = QApplication::desktop();
+    login->move(desktop->screen()->rect().center() - login->rect().center());
     login->setModal(true);
     login->setWindowTitle("Login");
     login->show();
     QObject::connect(login, SIGNAL(signal_login_accepted(QString, QString)), this, SLOT(slot_login(QString, QString)));
-    intermediary.get_version();
 }
 
 void BrainfuckIDE::on_actionCreate_new_account_triggered()
@@ -117,6 +125,8 @@ void BrainfuckIDE::on_actionLogout_triggered()
 {
     intermediary.on_logout_clicked();
     clear_history_menu();
+    this->hide();
+    on_actionLogin_triggered();
 }
 
 void BrainfuckIDE::on_actionSave_triggered()
@@ -148,6 +158,7 @@ void BrainfuckIDE::on_actionSave_as_triggered()
 
 void BrainfuckIDE::on_actionNew_triggered()
 {
+    intermediary.new_file();
     filename = "untitled.bf";
     is_saved = false;
     ui->CodeEditor->clear();

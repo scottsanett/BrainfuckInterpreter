@@ -1,4 +1,4 @@
-#include "intermediary.hpp"
+#include "client/intermediary.hpp"
 
 // scott::Client scott::client::Intermediary::client;
 scott::client::Delegate scott::client::Intermediary::delegate(0);

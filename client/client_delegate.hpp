@@ -10,6 +10,7 @@ namespace scott {
             Q_OBJECT
             
         signals:
+            void signal_file_saved();
             void signal_load_file(QString);
             void signal_load_result(QString);
             void signal_load_err_info(QString);

@@ -8,7 +8,10 @@ namespace scott {
         iss >> header;
         while (iss >> word) { body += word + " "; }
         body = body.substr(0, body.size() - 1);
-        if (header == responses.file_path) {
+        if (header == responses.file_saved) {
+            emit signal_file_saved();
+        }
+        else if (header == responses.file_path) {
             emit signal_load_file_path(body.c_str());
         }
         else if (header == responses.history_version) {

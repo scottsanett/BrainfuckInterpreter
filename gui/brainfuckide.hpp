@@ -4,17 +4,19 @@
 #include <QMainWindow>
 #include <QString>
 #include <QFileDialog>
+#include <QDesktopWidget>
 #include <memory>
 #include <algorithm>
+#include <stack>
 
-#include "client.hpp"
-#include "server.hpp"
-#include "intermediary.hpp"
-#include "client_delegate.hpp"
+#include "client/client.hpp"
+#include "client/intermediary.hpp"
+#include "client/client_delegate.hpp"
+#include "server/server.hpp"
 
-#include "loginwindow.hpp"
-#include "createaccount.hpp"
-#include "menuaction.hpp"
+#include "gui/loginwindow.hpp"
+#include "gui/createaccount.hpp"
+#include "gui/menuaction.hpp"
 
 namespace Ui {
 class BrainfuckIDE;
@@ -50,6 +52,8 @@ private slots:
 
     void slot_get_histoy_key(QString);
 
+    void slot_file_saved();
+
     void on_actionExit_triggered();
 
     void on_actionExecute_triggered();
@@ -74,6 +78,9 @@ private:
     QString result;
     QString filename = "untitled.bf";
     bool is_saved = false;
+    bool is_logged_in = false;
+    std::stack<QString> text_edit_pushed;
+    std::stack<QString> text_edit_popped;
 
     /* UI elements */
     Ui::BrainfuckIDE *ui;

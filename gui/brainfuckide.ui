@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>611</width>
-    <height>463</height>
+    <width>600</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,6 +44,12 @@
        </property>
        <property name="styleSheet">
         <string notr="true">font: 13pt &quot;Monaco&quot;;</string>
+       </property>
+       <property name="undoRedoEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Enter your code here...</string>
        </property>
       </widget>
       <widget class="QSplitter" name="splitter">
@@ -105,6 +111,9 @@
         <property name="styleSheet">
          <string notr="true">font: 13pt &quot;Monaco&quot;;</string>
         </property>
+        <property name="placeholderText">
+         <string>Enter your input here...</string>
+        </property>
        </widget>
        <widget class="QTextBrowser" name="Output">
         <property name="sizePolicy">
@@ -128,6 +137,9 @@
         <property name="styleSheet">
          <string notr="true">font: 13pt &quot;Monaco&quot;;</string>
         </property>
+        <property name="placeholderText">
+         <string>Your result shows here...</string>
+        </property>
        </widget>
       </widget>
      </widget>
@@ -139,7 +151,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>611</width>
+     <width>600</width>
      <height>22</height>
     </rect>
    </property>
@@ -174,7 +186,15 @@
     <addaction name="actionLogin"/>
     <addaction name="actionLogout"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuRun"/>
    <addaction name="menuVersion"/>
    <addaction name="menuAccount"/>
@@ -224,25 +244,53 @@
    <property name="text">
     <string>Login</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
   </action>
   <action name="actionLogout">
    <property name="text">
     <string>Logout</string>
+   </property>
+   <property name="shortcut">
+    <string>Meta+Ctrl+L</string>
    </property>
   </action>
   <action name="actionCreate_new_account">
    <property name="text">
     <string>Create account</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+N</string>
+   </property>
   </action>
   <action name="actionSave_as">
    <property name="text">
     <string>Save as</string>
    </property>
+   <property name="shortcut">
+    <string>Meta+Ctrl+S</string>
+   </property>
   </action>
   <action name="actionHistory">
    <property name="text">
     <string>Version control</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
    </property>
   </action>
  </widget>
