@@ -38,6 +38,7 @@ namespace scott {
     } requests;
     
     static struct response_constants {
+        const char * file_saved = "R_FILE_SAVED";
         const char * file_path = "R_FILE_PATH";
         const char * history_version = "R_HISTORY_VERSION";
         const char * history_code = "R_HISTORY_CODE";

@@ -29,31 +29,31 @@ LIBS += -L/usr/local/Cellar/boost/1.64.0_1/lib -lboost_system
 
 SOURCES += \
         main.cpp \
-        brainfuckide.cpp \
-    intermediary.cpp \
-    server_delegate.cpp \
-    client_delegate.cpp \
-    interpreter.cpp \
-    client.cpp \
-    server.cpp \
-    loginwindow.cpp \
-    createaccount.cpp \
-    menuaction.cpp
+        ./gui/brainfuckide.cpp \
+    ./client/intermediary.cpp \
+    ./server/server_delegate.cpp \
+    ./client/client_delegate.cpp \
+    ./interpreter/interpreter.cpp \
+    ./client/client.cpp \
+    ./server/server.cpp \
+    ./gui/loginwindow.cpp \
+    ./gui/createaccount.cpp \
+    ./gui/menuaction.cpp
 
 HEADERS += \
-    server_delegate.hpp \
-    server.hpp \
+    ./server/server_delegate.hpp \
+    ./server/server.hpp \
     namespace.hpp \
-    interpreter.hpp \
-    intermediary.hpp \
-    client_delegate.hpp \
-    client.hpp \
-    brainfuckide.hpp \
-    loginwindow.hpp \
-    createaccount.hpp \
-    menuaction.hpp
+    ./interpreter/interpreter.hpp \
+    ./client/intermediary.hpp \
+    ./client/client_delegate.hpp \
+    ./client/client.hpp \
+    ./gui/brainfuckide.hpp \
+    ./gui/loginwindow.hpp \
+    ./gui/createaccount.hpp \
+    ./gui/menuaction.hpp
 
 FORMS += \
-        brainfuckide.ui \
-    loginwindow.ui \
-    createaccount.ui
+        gui/brainfuckide.ui \
+    gui/loginwindow.ui \
+    gui/createaccount.ui

@@ -1,4 +1,4 @@
-#include "brainfuckide.hpp"
+#include "gui/brainfuckide.hpp"
 #include <QApplication>
 
 
@@ -6,7 +6,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     BrainfuckIDE w;
-    w.show();
-
+    w.hide();
     return a.exec();
 }
