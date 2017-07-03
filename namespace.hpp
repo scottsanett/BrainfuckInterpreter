@@ -65,6 +65,7 @@ namespace scott {
         const char * create_account_failure = "E_CREATE_ACCOUNT_FAILURE";
         const char * authentication_failure = "E_AUTHENTICATION_FAILURE";
         const char * file_access_failure = "E_FILE_ACCESS_FAILURE";
+        const char * save_file_failure = "E_SAVE_FILE_FAILURE";
     } response_err;
 
     static struct response_err_info {
@@ -73,6 +74,7 @@ namespace scott {
         const char * user_exists = "User already exists.";
         const char * user_not_found = "User not found.";
         const char * wrong_password = "Wrong username or password.";
+        const char * no_access = "You don't have access to this file.";
     } response_err_info;
 
     namespace client {

@@ -14,7 +14,6 @@ namespace scott {
             socket_ptr m_socket;
             std::string m_response;
             boost::asio::streambuf m_request;
-//            static server::Delegate server_delegate;  // dealing with all the other stuff
             
         private:
             std::string process_request(boost::asio::streambuf& request);

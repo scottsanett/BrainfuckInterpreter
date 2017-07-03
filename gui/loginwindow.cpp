@@ -24,6 +24,7 @@ void LoginWindow::on_pushButton_clicked()
 {
     accept();
     auto create = new CreateAccount(parentWidget());
+    QObject::connect(create, SIGNAL(signal_create_account_accepted(QString, QString)), this->parent(), SLOT(slot_create_account(QString, QString)));
     create->setModal(true);
     create->setWindowTitle("Create new account");
     create->show();

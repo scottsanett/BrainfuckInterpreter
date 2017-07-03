@@ -68,7 +68,6 @@ namespace scott {
                 std::string filepath;
                 iss >> filepath;
                 current_filename = filepath;
-                std::cout << filepath << std::endl;
                 std::string history_url;
                 for (auto && i : user_info) {
                     auto path = get_hidden_history_filepath(i.first);
@@ -76,7 +75,7 @@ namespace scott {
                     else { continue; }
                 }
                 if (history_url.empty() || history_url.find(".bf_" + current_user + ".history") == std::string::npos) {
-                    throw std::logic_error("Error: you don't have access to this file.");
+                    throw std::logic_error(std::string(response_err.file_access_failure) + " " + std::string(response_err_info.no_access));
                 }
                 read_user_history_from_file();
                 result = std::string(responses.load_file) + " " + return_file_content(filepath) + std::string(responses.delim);
@@ -133,7 +132,7 @@ namespace scott {
             }
         }
         else {
-            throw std::logic_error(std::string(response_err.authentication_failure) + " " + std::string(response_err_info.not_logged_in));
+            throw std::logic_error(std::string(response_err.save_file_failure) + " " + std::string(response_err_info.not_logged_in));
 //            throw std::logic_error("Error: you're not logged in.\n");
         }
     }
@@ -153,7 +152,6 @@ namespace scott {
         }
         else {
             throw std::logic_error(std::string(response_err.authentication_failure) + " " + std::string(response_err_info.not_logged_in));
-//            throw std::logic_error("Error: you're not logged in.\n");
         }
     }
 
@@ -205,7 +203,6 @@ namespace scott {
         }
         else {
             throw std::logic_error(std::string(response_err.authentication_failure) + " " + std::string(response_err_info.not_logged_in));
-//            throw std::logic_error("Error: you're not logged in.\n");
         }
     }
 
@@ -231,11 +228,9 @@ namespace scott {
         std::lock_guard<std::mutex> guard(mutex);
         if (logged_in == true)
             throw std::logic_error(std::string(response_succ.authentication_success) + " " + std::string(response_err_info.already_logged_in));
-//            throw std::logic_error("Error: You are already logged in.");
         auto itr = user_info.find(name);
         if (itr == user_info.end()) {
             throw std::logic_error(std::string(response_err.authentication_failure) + " " + std::string(response_err_info.user_not_found));
-//            throw std::logic_error("Error: user not found.\n");
         } // user not found
         else if (itr->second == password) {
             current_user = name;
@@ -244,14 +239,12 @@ namespace scott {
         } // authentication successful
         else {
             throw std::logic_error(std::string(response_err.authentication_failure) + " " + std::string(response_err_info.wrong_password));
-//            throw std::logic_error("Error: wrong password.\n");
         } // wrong password
     }
 
     std::string Delegate::return_history_versions(const std::string & username) {
         if (current_user.empty()) {
             throw std::logic_error(std::string(response_err.authentication_failure) + " " + std::string(response_err_info.not_logged_in));
-//            throw std::logic_error("Error: You are not logged in.\n");
         }
         else if (current_filename.empty()) {
             throw std::logic_error("Error: You haven't saved the current file, or no file is opened.\n");

@@ -22,6 +22,7 @@ namespace scott {
             void signal_create_account_error(QString);
             void signal_authentication_error(QString);
             void signal_file_access_failure(QString);
+            void signal_save_file_failure(QString);
 
             /*success signals */
             void signal_create_account_success(QString);

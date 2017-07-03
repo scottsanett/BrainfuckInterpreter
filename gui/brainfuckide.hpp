@@ -27,6 +27,10 @@ class BrainfuckIDE : public QMainWindow
 {
     Q_OBJECT
 
+    friend class scott::client::Intermediary;
+    friend class scott::server::Delegate;
+    friend class scott::server::Session;
+
 public:
     explicit BrainfuckIDE(QWidget *parent = 0);
     ~BrainfuckIDE();
@@ -59,7 +63,9 @@ private slots:
 
     void slot_authentication_failure(QString);
 
-    void slot_file_access_failure(QString) {}
+    void slot_file_access_failure(QString);
+
+    void slot_save_file_failure(QString);
 
     void slot_create_account_success(QString);
 
@@ -86,7 +92,13 @@ private slots:
     void on_actionNew_triggered();
 
 private:
-//    std::string code;
+    static scott::Server server;
+    static scott::Client client;
+    static scott::client::Intermediary intermediary;
+    static scott::server::Delegate server_delegate;
+    static scott::client::Delegate client_delegate;
+    static scott::Interpreter interpreter;
+
     QString input;
     QString result;
     QString filename = "untitled.bf";
@@ -100,13 +112,9 @@ private:
 
     std::string format_code();
     void clear_history_menu();
+    void clear_gui();
 
 public:
-    static scott::Server server;
-    static scott::Client client;
-    static scott::client::Intermediary intermediary;
-    static scott::server::Delegate server_delegate;
-    static scott::Interpreter interpreter;
 
 };
 

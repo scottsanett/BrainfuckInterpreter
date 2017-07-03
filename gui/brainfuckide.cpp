@@ -4,6 +4,7 @@
 scott::Server BrainfuckIDE::server(3333);
 scott::Client BrainfuckIDE::client;
 scott::client::Intermediary BrainfuckIDE::intermediary;
+scott::client::Delegate BrainfuckIDE::client_delegate(0);
 scott::server::Delegate BrainfuckIDE::server_delegate;
 scott::Interpreter BrainfuckIDE::interpreter;
 
@@ -14,17 +15,19 @@ BrainfuckIDE::BrainfuckIDE(QWidget *parent) :
     server.start();
     ui->setupUi(this);
     // setting up all the connections between the client_delegate and the ui class
-    QObject::connect(&intermediary.delegate, SIGNAL(signal_load_result(QString)), this, SLOT(slot_load_result(QString)));
-    QObject::connect(&intermediary.delegate, SIGNAL(signal_load_err_info(QString)), this, SLOT(slot_load_err_info(QString)));
-    QObject::connect(&intermediary.delegate, SIGNAL(signal_load_file_path(QString)), this, SLOT(slot_load_file_path(QString)));
-    QObject::connect(&intermediary.delegate, SIGNAL(signal_load_file(QString)), this, SLOT(slot_load_file(QString)));
-    QObject::connect(&intermediary.delegate, SIGNAL(signal_load_history_version(QString)), this, SLOT(slot_load_history_version(QString)));
-    QObject::connect(&intermediary.delegate, SIGNAL(signal_load_history_code(QString)), this, SLOT(slot_load_history_code(QString)));
-    QObject::connect(&intermediary.delegate, SIGNAL(signal_file_saved()), this, SLOT(slot_file_saved()));
-    QObject::connect(&intermediary.delegate, SIGNAL(signal_authentication_error(QString)), this, SLOT(slot_authentication_failure(QString)));
-    QObject::connect(&intermediary.delegate, SIGNAL(signal_authentication_success(QString)), this, SLOT(slot_authentication_success(QString)));
-    QObject::connect(&intermediary.delegate, SIGNAL(signal_create_account_error(QString)), this, SLOT(slot_create_account_failure(QString)));
-    QObject::connect(&intermediary.delegate, SIGNAL(signal_create_account_success(QString)), this, SLOT(slot_create_account_success(QString)));
+    QObject::connect(&client_delegate, SIGNAL(signal_load_result(QString)), this, SLOT(slot_load_result(QString)));
+    QObject::connect(&client_delegate, SIGNAL(signal_load_err_info(QString)), this, SLOT(slot_load_err_info(QString)));
+    QObject::connect(&client_delegate, SIGNAL(signal_load_file_path(QString)), this, SLOT(slot_load_file_path(QString)));
+    QObject::connect(&client_delegate, SIGNAL(signal_load_file(QString)), this, SLOT(slot_load_file(QString)));
+    QObject::connect(&client_delegate, SIGNAL(signal_load_history_version(QString)), this, SLOT(slot_load_history_version(QString)));
+    QObject::connect(&client_delegate, SIGNAL(signal_load_history_code(QString)), this, SLOT(slot_load_history_code(QString)));
+    QObject::connect(&client_delegate, SIGNAL(signal_file_saved()), this, SLOT(slot_file_saved()));
+    QObject::connect(&client_delegate, SIGNAL(signal_create_account_success(QString)), this, SLOT(slot_create_account_success(QString)));
+    QObject::connect(&client_delegate, SIGNAL(signal_create_account_error(QString)), this, SLOT(slot_create_account_failure(QString)));
+    QObject::connect(&client_delegate, SIGNAL(signal_authentication_success(QString)), this, SLOT(slot_authentication_success(QString)));
+    QObject::connect(&client_delegate, SIGNAL(signal_authentication_error(QString)), this, SLOT(slot_authentication_failure(QString)));
+    QObject::connect(&client_delegate, SIGNAL(signal_save_file_failure(QString)), this, SLOT(slot_save_file_failure(QString)));
+    QObject::connect(&client_delegate, SIGNAL(signal_file_access_failure(QString)), this, SLOT(slot_file_access_failure(QString)));
     on_actionLogin_triggered();
 }
 
@@ -54,7 +57,12 @@ void BrainfuckIDE::slot_load_err_info(QString error) {
 
 void BrainfuckIDE::slot_load_file_path(QString filepath) {
     auto url = QFileDialog::getOpenFileName(this, tr("Open File"), filepath, tr("Source files (*.bf *.ook)"));
-    intermediary.choose_file(url.toStdString());
+    if (!url.size() == 0) {
+        intermediary.choose_file(url.toStdString());
+    }
+    else {
+        ui->statusBar->showMessage("Action aborted.", 3000);
+    }
 }
 
 void BrainfuckIDE::slot_load_file(QString content) {
@@ -85,15 +93,17 @@ void BrainfuckIDE::slot_load_history_code(QString content) {
 }
 
 void BrainfuckIDE::slot_file_saved() {
+    intermediary.get_version();
     ui->statusBar->showMessage("The file has been saved.", 3000);
 }
 
 void BrainfuckIDE::slot_authentication_failure(QString msg) {
     auto login = new LoginWindow(this);
+    QObject::connect(login, SIGNAL(signal_login_accepted(QString, QString)), this, SLOT(slot_login(QString, QString)));
+    QObject::connect(login, SIGNAL(rejected()), this, SLOT(on_actionLogin_triggered()));
     login->setModal(true);
     login->setWindowTitle("Login to your account");
     login->show();
-    QObject::connect(login, SIGNAL(signal_login_accepted(QString, QString)), this, SLOT(slot_login(QString, QString)));
     auto message_box = new QMessageBox(login);
     message_box->setText(msg);
     message_box->setModal(true);
@@ -106,11 +116,11 @@ void BrainfuckIDE::slot_authentication_success(QString msg) {
 
 void BrainfuckIDE::slot_create_account_failure(QString msg) {
     auto create = new CreateAccount(this);
+    QObject::connect(create, SIGNAL(signal_create_account_accepted(QString, QString)), this, SLOT(slot_create_account(QString, QString)));
     create->setModal(true);
     create->setWindowTitle("Create a new account");
     create->show();
-    QObject::connect(create, SIGNAL(signal_create_account_accepted(QString, QString)), this, SLOT(slot_create_account(QString, QString)));
-    auto message_box = new QMessageBox(create);
+    auto message_box = new QMessageBox();
     message_box->setText(msg);
     message_box->setModal(true);
     message_box->show();
@@ -118,6 +128,22 @@ void BrainfuckIDE::slot_create_account_failure(QString msg) {
 
 void BrainfuckIDE::slot_create_account_success(QString msg) {
     ui->statusBar->showMessage(msg, 3000);
+    on_actionLogin_triggered();
+}
+
+void BrainfuckIDE::slot_save_file_failure(QString msg) {
+    is_saved = false;
+    auto message_box = new QMessageBox();
+    message_box->setText(msg);
+    message_box->setModal(true);
+    message_box->show();
+}
+
+void BrainfuckIDE::slot_file_access_failure(QString msg) {
+    auto message_box = new QMessageBox();
+    message_box->setText(msg);
+    message_box->setModal(true);
+    message_box->show();
 }
 
 void BrainfuckIDE::on_actionExit_triggered()
@@ -135,21 +161,22 @@ void BrainfuckIDE::on_actionExecute_triggered()
 void BrainfuckIDE::on_actionLogin_triggered()
 {
     auto login = new LoginWindow(this);
+    QDesktopWidget desktop;
+    login->move(desktop.screen()->rect().center() - login->rect().center());
+    QObject::connect(login, SIGNAL(signal_login_accepted(QString, QString)), this, SLOT(slot_login(QString, QString)));
+    QObject::connect(login, SIGNAL(rejected()), this, SLOT(on_actionLogin_triggered()));
     login->setModal(true);
     login->setWindowTitle("Login");
     login->show();
-    QObject::connect(login, SIGNAL(signal_login_accepted(QString, QString)), this, SLOT(slot_login(QString, QString)));
-    QObject::connect(login, SIGNAL(rejected()), this, SLOT(on_actionLogin_triggered()));
-//    QObject::connect(login, SIGNAL(close()), this, SLOT(on_actionLogin_triggered()));
 }
 
 void BrainfuckIDE::on_actionCreate_new_account_triggered()
 {
     auto create = new CreateAccount(this);
+    QObject::connect(create, SIGNAL(signal_create_account_accepted(QString, QString)), this, SLOT(slot_create_account(QString, QString)));
     create->setModal(true);
     create->setWindowTitle("Create new account");
     create->show();
-    QObject::connect(create, SIGNAL(signal_create_account_accepted(QString, QString)), this, SLOT(slot_create_account(QString, QString)));
 }
 
 void BrainfuckIDE::on_actionOpen_triggered()
@@ -160,7 +187,7 @@ void BrainfuckIDE::on_actionOpen_triggered()
 void BrainfuckIDE::on_actionLogout_triggered()
 {
     intermediary.on_logout_clicked();
-    clear_history_menu();
+    clear_gui();
     on_actionLogin_triggered();
 }
 
@@ -170,39 +197,60 @@ void BrainfuckIDE::on_actionSave_triggered()
     if (is_saved) {
         intermediary.save_file(code);
     }
-    else {
-        filename = QFileDialog::getSaveFileName(this, tr("Save File"),
+    else {  
+        auto url = QFileDialog::getSaveFileName(this, tr("Save File"),
                                    "./untitled.bf",
                                    tr("Source files (*.bf *.ook)"));
-        intermediary.save_new_file(filename.toStdString(), code);
-        is_saved = true;
+        if (!url.size() == 0) {
+            filename = url;
+            intermediary.save_new_file(filename.toStdString(), code);
+            is_saved = true;
+            intermediary.get_version();
+        }
+        else {
+            ui->statusBar->showMessage("Save file cancelled.", 3000);
+        }
     }
-    intermediary.get_version();
 }
 
 void BrainfuckIDE::on_actionSave_as_triggered()
 {
     auto code = format_code();
-    filename = QFileDialog::getSaveFileName(this, tr("Save File"),
+    auto url = QFileDialog::getSaveFileName(this, tr("Save File"),
                                "./untitled.bf",
                                tr("Source files (*.bf *.ook)"));
-    intermediary.save_new_file(filename.toStdString(), code);
-    intermediary.get_version();
-    is_saved = true;
+    if (!url.size() == 0) {
+        intermediary.save_new_file(filename.toStdString(), code);
+        intermediary.get_version();
+        is_saved = true;
+    }
+    else {
+        ui->statusBar->showMessage("Save file cancelled.");
+    }
 }
 
 void BrainfuckIDE::on_actionNew_triggered()
 {
-    intermediary.new_file();
+//    intermediary.new_file();
     filename = "untitled.bf";
     is_saved = false;
     ui->CodeEditor->clear();
+    ui->InputEditor->clear();
+    ui->Output->clear();
+    clear_history_menu();
 }
 
 void BrainfuckIDE::clear_history_menu() {
     ui->menuVersion->clear();
     ui->menuVersion->addAction("Version control");
     ui->menuVersion->addSeparator();
+}
+
+void BrainfuckIDE::clear_gui() {
+    clear_history_menu();
+    ui->CodeEditor->clear();
+    ui->InputEditor->clear();
+    ui->Output->clear();
 }
 
 std::string BrainfuckIDE::format_code() {

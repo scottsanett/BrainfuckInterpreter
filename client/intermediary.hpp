@@ -34,7 +34,6 @@ namespace scott {
              
         public:
             Intermediary() = default;
-            static scott::client::Delegate delegate;
             void close();
         };
         

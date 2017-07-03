@@ -237,7 +237,7 @@
     <string>Execute</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+E</string>
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="actionLogin">

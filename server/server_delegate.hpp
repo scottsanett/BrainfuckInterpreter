@@ -11,7 +11,6 @@ namespace scott {
         private:
             str_map user_info;
             str_map code_history;
-//            std::map<std::string, str_map> code_history;
             std::string current_user;
             std::string current_filename;
             std::mutex mutex;
