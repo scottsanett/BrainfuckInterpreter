@@ -132,7 +132,10 @@ namespace scott {
                 file << line << '\n';
             }
         }
-        else { throw std::logic_error("Error: you're not logged in.\n"); }
+        else {
+            throw std::logic_error(std::string(response_err.authentication_failure) + " " + std::string(response_err_info.not_logged_in));
+//            throw std::logic_error("Error: you're not logged in.\n");
+        }
     }
 
     void Delegate::save_code_history(const std::string &code) {
@@ -148,7 +151,10 @@ namespace scott {
             }
             save_user_history_to_file();
         }
-        else { throw std::logic_error("Error: you're not logged in.\n"); }
+        else {
+            throw std::logic_error(std::string(response_err.authentication_failure) + " " + std::string(response_err_info.not_logged_in));
+//            throw std::logic_error("Error: you're not logged in.\n");
+        }
     }
 
     void Delegate::save_user_history_to_file() {
@@ -197,7 +203,10 @@ namespace scott {
             auto result = BrainfuckIDE::interpreter.start(code);
             return result;
         }
-        else { throw std::logic_error("Error: you're not logged in.\n"); }
+        else {
+            throw std::logic_error(std::string(response_err.authentication_failure) + " " + std::string(response_err_info.not_logged_in));
+//            throw std::logic_error("Error: you're not logged in.\n");
+        }
     }
 
     void Delegate::log_out() {
@@ -208,25 +217,41 @@ namespace scott {
     void Delegate::create_account(const std::string & name, const std::string & password) {
         std::lock_guard<std::mutex> guard(mutex);
         auto itr = user_info.find(name);
-        if (itr != user_info.end()) { throw std::logic_error("Error: user already exists.\n"); } // user already exists
-        else { user_info[name] = password; current_user = name; }
+        if (itr != user_info.end()) {
+            throw std::logic_error(std::string(response_err.create_account_failure) + " " + std::string(response_err_info.user_exists));
+        } // user already exists
+        else {
+            user_info[name] = password;
+            current_user = name;
+            throw std::logic_error(std::string(response_succ.create_account_success) + " " + std::string(response_succ_info.account_created));
+        }
     }
 
     void Delegate::authenticate(const std::string & name, const std::string & password) {
         std::lock_guard<std::mutex> guard(mutex);
-        if (logged_in == true) throw std::logic_error("Error: You are already logged in.");
+        if (logged_in == true)
+            throw std::logic_error(std::string(response_succ.authentication_success) + " " + std::string(response_err_info.already_logged_in));
+//            throw std::logic_error("Error: You are already logged in.");
         auto itr = user_info.find(name);
-        if (itr == user_info.end()) { throw std::logic_error("Error: user not found.\n"); } // user not found
+        if (itr == user_info.end()) {
+            throw std::logic_error(std::string(response_err.authentication_failure) + " " + std::string(response_err_info.user_not_found));
+//            throw std::logic_error("Error: user not found.\n");
+        } // user not found
         else if (itr->second == password) {
             current_user = name;
             logged_in = true;
+            throw std::logic_error(std::string(response_succ.authentication_success) + " " + std::string(response_succ_info.logged_in));
         } // authentication successful
-        else { throw std::logic_error("Error: wrong password.\n");  } // wrong password
+        else {
+            throw std::logic_error(std::string(response_err.authentication_failure) + " " + std::string(response_err_info.wrong_password));
+//            throw std::logic_error("Error: wrong password.\n");
+        } // wrong password
     }
 
     std::string Delegate::return_history_versions(const std::string & username) {
         if (current_user.empty()) {
-            throw std::logic_error("Error: You are not logged in.\n");
+            throw std::logic_error(std::string(response_err.authentication_failure) + " " + std::string(response_err_info.not_logged_in));
+//            throw std::logic_error("Error: You are not logged in.\n");
         }
         else if (current_filename.empty()) {
             throw std::logic_error("Error: You haven't saved the current file, or no file is opened.\n");

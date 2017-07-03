@@ -18,6 +18,16 @@ namespace scott {
             void signal_load_history_version(QString);
             void signal_load_history_code(QString);
 
+            /* error signals */
+            void signal_create_account_error(QString);
+            void signal_authentication_error(QString);
+            void signal_file_access_failure(QString);
+
+            /*success signals */
+            void signal_create_account_success(QString);
+            void signal_authentication_success(QString);
+            void signal_file_access_success(QString);
+
         public:
             void parse_response(std::string const & response);
             Delegate(QObject* parent): QObject(parent) {}

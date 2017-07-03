@@ -21,6 +21,10 @@ BrainfuckIDE::BrainfuckIDE(QWidget *parent) :
     QObject::connect(&intermediary.delegate, SIGNAL(signal_load_history_version(QString)), this, SLOT(slot_load_history_version(QString)));
     QObject::connect(&intermediary.delegate, SIGNAL(signal_load_history_code(QString)), this, SLOT(slot_load_history_code(QString)));
     QObject::connect(&intermediary.delegate, SIGNAL(signal_file_saved()), this, SLOT(slot_file_saved()));
+    QObject::connect(&intermediary.delegate, SIGNAL(signal_authentication_error(QString)), this, SLOT(slot_authentication_failure(QString)));
+    QObject::connect(&intermediary.delegate, SIGNAL(signal_authentication_success(QString)), this, SLOT(slot_authentication_success(QString)));
+    QObject::connect(&intermediary.delegate, SIGNAL(signal_create_account_error(QString)), this, SLOT(slot_create_account_failure(QString)));
+    QObject::connect(&intermediary.delegate, SIGNAL(signal_create_account_success(QString)), this, SLOT(slot_create_account_success(QString)));
     on_actionLogin_triggered();
 }
 
@@ -34,7 +38,6 @@ BrainfuckIDE::~BrainfuckIDE()
 void BrainfuckIDE::slot_login(QString usr, QString pwd) {
     intermediary.on_login_clicked(usr.toStdString(), pwd.toStdString());
     clear_history_menu();
-    this->show();
 }
 
 void BrainfuckIDE::slot_create_account(QString usr, QString pwd) {
@@ -46,7 +49,7 @@ void BrainfuckIDE::slot_load_result(QString result) {
 }
 
 void BrainfuckIDE::slot_load_err_info(QString error) {
-    ui->statusBar->showMessage(error, 5000);
+    ui->statusBar->showMessage(error, 3000);
 }
 
 void BrainfuckIDE::slot_load_file_path(QString filepath) {
@@ -82,7 +85,39 @@ void BrainfuckIDE::slot_load_history_code(QString content) {
 }
 
 void BrainfuckIDE::slot_file_saved() {
-    ui->statusBar->showMessage("The file has been saved.", 5000);
+    ui->statusBar->showMessage("The file has been saved.", 3000);
+}
+
+void BrainfuckIDE::slot_authentication_failure(QString msg) {
+    auto login = new LoginWindow(this);
+    login->setModal(true);
+    login->setWindowTitle("Login to your account");
+    login->show();
+    QObject::connect(login, SIGNAL(signal_login_accepted(QString, QString)), this, SLOT(slot_login(QString, QString)));
+    auto message_box = new QMessageBox(login);
+    message_box->setText(msg);
+    message_box->setModal(true);
+    message_box->show();
+}
+
+void BrainfuckIDE::slot_authentication_success(QString msg) {
+    ui->statusBar->showMessage(msg, 3000);
+}
+
+void BrainfuckIDE::slot_create_account_failure(QString msg) {
+    auto create = new CreateAccount(this);
+    create->setModal(true);
+    create->setWindowTitle("Create a new account");
+    create->show();
+    QObject::connect(create, SIGNAL(signal_create_account_accepted(QString, QString)), this, SLOT(slot_create_account(QString, QString)));
+    auto message_box = new QMessageBox(create);
+    message_box->setText(msg);
+    message_box->setModal(true);
+    message_box->show();
+}
+
+void BrainfuckIDE::slot_create_account_success(QString msg) {
+    ui->statusBar->showMessage(msg, 3000);
 }
 
 void BrainfuckIDE::on_actionExit_triggered()
@@ -100,12 +135,12 @@ void BrainfuckIDE::on_actionExecute_triggered()
 void BrainfuckIDE::on_actionLogin_triggered()
 {
     auto login = new LoginWindow(this);
-    QDesktopWidget *desktop = QApplication::desktop();
-    login->move(desktop->screen()->rect().center() - login->rect().center());
     login->setModal(true);
     login->setWindowTitle("Login");
     login->show();
     QObject::connect(login, SIGNAL(signal_login_accepted(QString, QString)), this, SLOT(slot_login(QString, QString)));
+    QObject::connect(login, SIGNAL(rejected()), this, SLOT(on_actionLogin_triggered()));
+//    QObject::connect(login, SIGNAL(close()), this, SLOT(on_actionLogin_triggered()));
 }
 
 void BrainfuckIDE::on_actionCreate_new_account_triggered()
@@ -126,7 +161,6 @@ void BrainfuckIDE::on_actionLogout_triggered()
 {
     intermediary.on_logout_clicked();
     clear_history_menu();
-    this->hide();
     on_actionLogin_triggered();
 }
 

@@ -22,6 +22,7 @@ void CreateAccount::on_buttonBox_accepted()
 
 void CreateAccount::on_pushButton_clicked()
 {
+    accept();
     auto login = new LoginWindow(parentWidget());
     login->setModal(true);
     login->setWindowTitle("Login to your account");

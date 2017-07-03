@@ -49,6 +49,32 @@ namespace scott {
         const char * delim = "\r\n\r\n";
     } responses;
 
+    static struct response_success {
+        const char * create_account_success = "D_CREATE_ACCOUNT_SUCCESS";
+        const char * authentication_success = "D_AUTHENTICATION_SUCCESS";
+        const char * file_access_success = "D_FILE_ACCESS_SUCCESS";
+    } response_succ;
+
+    static struct response_success_info {
+        const char * logged_in = "You are now logged in.";
+        const char * account_created = "Account created.";
+    } response_succ_info;
+
+    static struct response_errors {
+//        const char * login_failure = "E_LOGIN_FAILURE";
+        const char * create_account_failure = "E_CREATE_ACCOUNT_FAILURE";
+        const char * authentication_failure = "E_AUTHENTICATION_FAILURE";
+        const char * file_access_failure = "E_FILE_ACCESS_FAILURE";
+    } response_err;
+
+    static struct response_err_info {
+        const char * not_logged_in = "You are not logged in.";
+        const char * already_logged_in = "You are already logged in.";
+        const char * user_exists = "User already exists.";
+        const char * user_not_found = "User not found.";
+        const char * wrong_password = "Wrong username or password.";
+    } response_err_info;
+
     namespace client {
         class Session;
         class Delegate;

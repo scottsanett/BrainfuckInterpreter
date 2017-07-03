@@ -22,6 +22,7 @@ void LoginWindow::on_buttonBox_accepted()
 
 void LoginWindow::on_pushButton_clicked()
 {
+    accept();
     auto create = new CreateAccount(parentWidget());
     create->setModal(true);
     create->setWindowTitle("Create new account");

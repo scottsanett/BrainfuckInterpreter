@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QString>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QDesktopWidget>
 #include <memory>
 #include <algorithm>
@@ -53,6 +54,18 @@ private slots:
     void slot_get_histoy_key(QString);
 
     void slot_file_saved();
+
+    void slot_create_account_failure(QString);
+
+    void slot_authentication_failure(QString);
+
+    void slot_file_access_failure(QString) {}
+
+    void slot_create_account_success(QString);
+
+    void slot_authentication_success(QString);
+
+    void slot_file_access_success(QString) {}
 
     void on_actionExit_triggered();
 

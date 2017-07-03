@@ -27,7 +27,30 @@ namespace scott {
             emit signal_load_result(body.c_str());
         }
         else if (header == responses.op_fail) {
-            emit signal_load_err_info(body.c_str());
+//            emit signal_load_err_info(body.c_str());
+            std::istringstream iss(body);
+            std::string err_type, err_info, word;
+            iss >> err_type;
+            while (iss >> word) { err_info += word + " "; }
+            err_info = err_info.substr(0, err_info.length() - 1);
+            if (err_type == response_err.create_account_failure) {
+                emit signal_create_account_error(err_info.c_str());
+            }
+            else if (err_type == response_err.authentication_failure) {
+                emit signal_authentication_error(err_info.c_str());
+            }
+            else if (err_type == response_err.file_access_failure) {
+                emit signal_file_access_failure(err_info.c_str());
+            }
+            else if (err_type == response_succ.create_account_success) {
+                emit signal_create_account_success(err_info.c_str());
+            }
+            else if (err_type == response_succ.authentication_success) {
+                emit signal_authentication_success(err_info.c_str());
+            }
+            else if (err_type == response_succ.file_access_success) {
+                emit signal_file_access_success(err_info.c_str());
+            }
         }
     }
     }
