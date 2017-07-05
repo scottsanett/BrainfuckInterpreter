@@ -7,8 +7,18 @@ namespace scott {
         BrainfuckIDE::client.close();
     }
 
-    void Intermediary::new_file() {
-        std::string request = std::string(scott::requests.new_file) + std::string(scott::requests.delim);
+    void Intermediary::open_file_request() {
+        std::string request = std::string(scott::requests.open_file_request) + std::string(scott::requests.delim);
+        BrainfuckIDE::client.send_request(IP_ADDRESS, port_num, request, ++id, BrainfuckIDE::client_delegate);
+    }
+
+    void Intermediary::save_file_request() {
+        std::string request = std::string(scott::requests.save_file_request) + std::string(scott::requests.delim);
+        BrainfuckIDE::client.send_request(IP_ADDRESS, port_num, request, ++id, BrainfuckIDE::client_delegate);
+    }
+
+    void Intermediary::new_file_request() {
+        std::string request = std::string(scott::requests.new_file_request) + std::string(scott::requests.delim);
         BrainfuckIDE::client.send_request(IP_ADDRESS, port_num, request, ++id, BrainfuckIDE::client_delegate);
     }
 
@@ -27,10 +37,6 @@ namespace scott {
         BrainfuckIDE::client.send_request(IP_ADDRESS, port_num, request, ++id, BrainfuckIDE::client_delegate);
     }
 
-    void Intermediary::open_file() {
-        std::string request = std::string(scott::requests.open_file) + std::string(scott::requests.delim);
-        BrainfuckIDE::client.send_request(IP_ADDRESS, port_num, request, ++id, BrainfuckIDE::client_delegate);
-    }
 
     void Intermediary::get_version() {
         std::string request = std::string(scott::requests.get_version) + std::string(scott::requests.delim);

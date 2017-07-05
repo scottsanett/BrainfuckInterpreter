@@ -11,13 +11,14 @@
 #include <stack>
 
 #include "client/client.hpp"
-#include "client/intermediary.hpp"
 #include "client/client_delegate.hpp"
 #include "server/server.hpp"
+#include "intermediary/intermediary.hpp"
 
 #include "gui/loginwindow.hpp"
 #include "gui/createaccount.hpp"
 #include "gui/menuaction.hpp"
+#include "gui/filechooser.hpp"
 
 namespace Ui {
 class BrainfuckIDE;
@@ -27,9 +28,8 @@ class BrainfuckIDE : public QMainWindow
 {
     Q_OBJECT
 
-    friend class scott::client::Intermediary;
-    friend class scott::server::Delegate;
-    friend class scott::server::Session;
+    friend class scott::intermediary::intermediary;
+    friend class scott::server::session;
 
 public:
     explicit BrainfuckIDE(QWidget *parent = 0);
@@ -47,7 +47,11 @@ private slots:
 
     void slot_load_err_info(QString);
 
-    void slot_load_file_path(QString);
+    void slot_open_file_request(QString);
+
+    void slot_save_file_request(QString);
+
+    void slot_on_file_chosen(QString, bool);
 
     void slot_load_file(QString);
 
@@ -92,20 +96,15 @@ private slots:
     void on_actionNew_triggered();
 
 private:
-    static scott::Server server;
-    static scott::Client client;
-    static scott::client::Intermediary intermediary;
-    static scott::server::Delegate server_delegate;
-    static scott::client::Delegate client_delegate;
-    static scott::Interpreter interpreter;
+    static scott::server::server server;
+    static scott::client::client client;
+    static scott::intermediary::intermediary intermediary;
 
     QString input;
     QString result;
     QString filename = "untitled.bf";
     bool is_saved = false;
     bool is_logged_in = false;
-    std::stack<QString> text_edit_pushed;
-    std::stack<QString> text_edit_popped;
 
     /* UI elements */
     Ui::BrainfuckIDE *ui;
@@ -113,6 +112,7 @@ private:
     std::string format_code();
     void clear_history_menu();
     void clear_gui();
+
 
 public:
 

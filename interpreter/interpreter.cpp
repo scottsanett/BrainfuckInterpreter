@@ -1,7 +1,8 @@
 #include "interpreter.hpp"
 
 namespace scott {
-bool Interpreter::check_syntax() {
+namespace interpreter {
+bool interpreter::check_syntax() {
     if (code.length() == 0) { return false; }
     std::stack<char> char_stack;
     for (auto && i : code) {
@@ -20,7 +21,7 @@ bool Interpreter::check_syntax() {
     return true;
 }
 
-void Interpreter::recursion(char_pos itr) {
+void interpreter::recursion(char_pos itr) {
     while (itr != code.end() && *itr != ']') {
         if (*itr == symbols[0]) m_plus();
         else if (*itr == symbols[1]) m_minus();
@@ -46,14 +47,14 @@ void Interpreter::recursion(char_pos itr) {
     }
 }
 
-void Interpreter::reset() {
+void interpreter::reset() {
     for (int i = 0; i < 500; ++i) { cells[i] = 0; }
     current_cell = &cells[0];
     current_input_pos = input.begin();
     result.clear();
 }
 
-std::string Interpreter::start(const std::string & str) {
+std::string interpreter::start(const std::string & str) {
     std::istringstream iss(str);
     iss >> code >> input;
     if (!check_syntax()) { return result; }
@@ -74,5 +75,6 @@ std::string Interpreter::start(const std::string & str) {
     catch (...) {
         return "Unknown error occurred.\n";
     }
+}
 }
 }

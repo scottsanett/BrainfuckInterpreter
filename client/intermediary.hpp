@@ -15,11 +15,12 @@ namespace scott {
             
         public:
             /*------handlers that may involved client::Delegate class------*/
-            void new_file(); // sends request to the server, expects directory filepath as resposne
+            void open_file_request();
+            void save_file_request();
+            void new_file_request();
             void save_new_file(std::string const filename, std::string const code); // sends code to the server to receive directory path
             void save_file(std::string const code);
             void choose_file(std::string const filepath); // send to server the final path of the file, expects code content as response
-            void open_file(); // sends open file request, expects a directory path as response
             void get_version(); // sends see versions request, expects history versions as response
             void choose_version(std::string const & history_key); // a version is clicked, sends history name as request, expects history code as response
             void is_logged_in();
@@ -29,7 +30,6 @@ namespace scott {
             void on_create_account_clicked(std::string const username, std::string const password);
             void on_login_clicked(std::string const username, std::string const password);
             void on_logout_clicked(); // LOGOUT
-            void on_text_edited(); // when text changes
 
              
         public:

@@ -21,8 +21,9 @@
 
 namespace scott {
     static struct request_constants {
-        const char * new_file = "S_NEW_FILE";
-        const char * open_file = "S_OPEN";
+        const char * new_file_request = "S_NEW_FILE";
+        const char * open_file_request = "S_OPEN_FILE_REQUEST";
+        const char * save_file_request = "S_SAVE_FILE_REQUEST";
         const char * save_file = "S_SAVE_FILE";
         const char * save_new_file = "S_SAVE_NEW_FILE";
         const char * choose_file = "S_CHOOSE_FILE";
@@ -36,10 +37,13 @@ namespace scott {
         const char * redo = "S_REDO";
         const char * delim = "\r\n\r\n";
     } requests;
-    
+
     static struct response_constants {
+        const char * open_file_request = "R_OPEN_FILE_REQUEST";
+        const char * save_file_request = "R_SAVE_FILE_REQUEST";
+        const char * save_file = "R_SAVE_FILE";
         const char * file_saved = "R_FILE_SAVED";
-        const char * file_path = "R_FILE_PATH";
+        const char * all_files = "R_ALL_FILES";
         const char * history_version = "R_HISTORY_VERSION";
         const char * history_code = "R_HISTORY_CODE";
         const char * load_file = "R_LOAD_FILE";
@@ -61,7 +65,7 @@ namespace scott {
     } response_succ_info;
 
     static struct response_errors {
-//        const char * login_failure = "E_LOGIN_FAILURE";
+        //        const char * login_failure = "E_LOGIN_FAILURE";
         const char * create_account_failure = "E_CREATE_ACCOUNT_FAILURE";
         const char * authentication_failure = "E_AUTHENTICATION_FAILURE";
         const char * file_access_failure = "E_FILE_ACCESS_FAILURE";
@@ -75,30 +79,52 @@ namespace scott {
         const char * user_not_found = "User not found.";
         const char * wrong_password = "Wrong username or password.";
         const char * no_access = "You don't have access to this file.";
+        const char * file_exists = "A file with the same name already exists.";
     } response_err_info;
 
+    static enum authentication_err_code {
+        login_successful = 0,
+        wrong_usr_or_pwd = 1,
+        user_not_found = 2
+    } authentication_err_code;
+
+    static enum create_account_err_code {
+        creation_successful = 0,
+        account_exists = 1
+    } create_account_err_code;
+
     namespace client {
-        class Session;
-        class Delegate;
-        class Intermediary;
-    }
-    
-    namespace server {
-        class Session;
-        class Acceptor;
-        class Delegate;
+        class client;
+        class session;
+        class delegate;
     }
 
-    class Client;
-    class Server;
-    class Interpreter;
+    namespace server {
+        class server;
+        class session;
+        class acceptor;
+        class delegate;
+    }
+
+    namespace intermediary {
+        class intermediary;
+    }
+
+    namespace interpreter {
+        class interpreter;
+    }
+
+    namespace database {
+        class database;
+    }
 
     using str_map = std::map<std::string, std::string>;
     using strvec = std::vector<std::string>;
-    using session_ptr = std::shared_ptr<client::Session>;
+    using session_ptr = std::shared_ptr<client::session>;
     using socket_ptr = std::shared_ptr<boost::asio::ip::tcp::socket>;
     using cell = std::vector<char>::iterator;
     using char_pos = std::string::iterator;
+
 }
 
 #endif /* namespace_h */

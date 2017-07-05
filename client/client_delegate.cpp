@@ -2,7 +2,7 @@
 
 namespace scott {
     namespace client {
-    void Delegate::parse_response(std::string const & response) {
+    void delegate::parse_response(std::string const & response) {
         std::string header, body, word;
         std::istringstream iss(response);
         iss >> header;
@@ -11,8 +11,11 @@ namespace scott {
         if (header == responses.file_saved) {
             emit signal_file_saved();
         }
-        else if (header == responses.file_path) {
-            emit signal_load_file_path(body.c_str());
+        else if (header == responses.open_file_request) {
+            emit signal_open_file_request(body.c_str());
+        }
+        else if (header == responses.save_file_request) {
+            emit signal_save_file_request(body.c_str());
         }
         else if (header == responses.history_version) {
             emit signal_load_history_version(body.c_str());

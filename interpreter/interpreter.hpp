@@ -4,7 +4,8 @@
 #include "namespace.hpp"
 
 namespace scott {
-    class Interpreter {
+    namespace interpreter {
+    class interpreter {
     private:
         std::array<char, 8> const symbols = {'+', '-', '>', '<', ',', '.', '[', ']'};
         char cells[0x100000];
@@ -31,9 +32,10 @@ namespace scott {
         void reset();
          
     public:
-        explicit Interpreter() = default;
+        interpreter() = default;
         std::string start(std::string const & str);
     };
+    }
 }
 
 

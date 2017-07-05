@@ -25,12 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 INCLUDEPATH += /usr/local/Cellar/boost/1.64.0_1/include
-LIBS += -L/usr/local/Cellar/boost/1.64.0_1/lib -lboost_system
+LIBS += -L/usr/local/Cellar/boost/1.64.0_1/lib -lboost_system -lboost_serialization
 
 SOURCES += \
         main.cpp \
         ./gui/brainfuckide.cpp \
-    ./client/intermediary.cpp \
+    ./intermediary/intermediary.cpp \
     ./server/server_delegate.cpp \
     ./client/client_delegate.cpp \
     ./interpreter/interpreter.cpp \
@@ -38,22 +38,27 @@ SOURCES += \
     ./server/server.cpp \
     ./gui/loginwindow.cpp \
     ./gui/createaccount.cpp \
-    ./gui/menuaction.cpp
+    ./gui/menuaction.cpp \
+    ./database/database.cpp \
+    ./gui/filechooser.cpp
 
 HEADERS += \
     ./server/server_delegate.hpp \
     ./server/server.hpp \
     namespace.hpp \
     ./interpreter/interpreter.hpp \
-    ./client/intermediary.hpp \
+    ./intermediary/intermediary.hpp \
     ./client/client_delegate.hpp \
     ./client/client.hpp \
     ./gui/brainfuckide.hpp \
     ./gui/loginwindow.hpp \
     ./gui/createaccount.hpp \
-    ./gui/menuaction.hpp
+    ./gui/menuaction.hpp \
+    ./database/database.hpp \
+    ./gui/filechooser.hpp
 
 FORMS += \
         gui/brainfuckide.ui \
     gui/loginwindow.ui \
-    gui/createaccount.ui
+    gui/createaccount.ui \
+    gui/filechooser.ui

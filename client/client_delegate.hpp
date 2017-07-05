@@ -6,15 +6,16 @@
 
 namespace scott {
     namespace client {
-        class Delegate: public QObject {
+        class delegate: public QObject {
             Q_OBJECT
             
         signals:
             void signal_file_saved();
+            void signal_open_file_request(QString);
+            void signal_save_file_request(QString);
             void signal_load_file(QString);
             void signal_load_result(QString);
             void signal_load_err_info(QString);
-            void signal_load_file_path(QString);
             void signal_load_history_version(QString);
             void signal_load_history_code(QString);
 
@@ -31,7 +32,7 @@ namespace scott {
 
         public:
             void parse_response(std::string const & response);
-            Delegate(QObject* parent): QObject(parent) {}
+            delegate(QObject* parent): QObject(parent) {}
         };
     }
 }
